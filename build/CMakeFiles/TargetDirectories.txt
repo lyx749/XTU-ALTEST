@@ -1,0 +1,9 @@
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/Experimental.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/Nightly.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/Continuous.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/NightlyMemoryCheck.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/altest.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/PACKAGE.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/RUN_TESTS.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/lyx/Desktop/AItest/build/CMakeFiles/ZERO_CHECK.dir
