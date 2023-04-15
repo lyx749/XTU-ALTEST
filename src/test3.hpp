@@ -241,7 +241,7 @@ void neuralNetwork::train()
 
 void neuralNetwork::saveWeightAndThreshold()
 {
-    std::ofstream writeFile("WeightAndThreshold.txt", std::ios::out & std::ios::trunc & std::ios::app);
+    std::ofstream writeFile("WeightAndThreshold.txt", std::ios::out & std::ios::app);
     if (writeFile.is_open())
     {
         for (int i = 0; i < inputNodes; ++i)
