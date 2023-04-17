@@ -14,7 +14,7 @@ using gene = std::array<double, 22>;
 const double crossRate = 0.9;
 const double mutateRate = 0.1;
 const int populationSize = 10;
-const int maxGeneration = 200;
+const int maxGeneration = 100;
 
 std::random_device seed;
 std::mt19937 get(seed());
@@ -26,20 +26,13 @@ double targetFunction(double x)
 
 class individual
 {
+    friend class population;
+
 public:
     gene x;
     double fitness;
 
 public:
-    void initIndividual()
-    {
-        std::uniform_int_distribution<> dist(0, 1);
-        for (auto &e : x)
-        {
-            e = dist(get) % 2;
-        }
-    }
-
     double getDecode()
     {
         double k = 21;
@@ -50,6 +43,16 @@ public:
             k--;
         }
         return (-1 + (3.0 / maxNums * sum));
+    }
+
+private:
+    void initIndividual()
+    {
+        std::uniform_int_distribution<> dist(0, 1);
+        for (auto &e : x)
+        {
+            e = dist(get) % 2;
+        }
     }
 
     void getFitness()
@@ -134,16 +137,16 @@ public:
     void crossOver()
     {
         std::uniform_int_distribution<> dId(0, populationSize - 1);
-        std::uniform_int_distribution<> dSize(0, 21);
+        std::uniform_int_distribution<> dPoint(0, 21);
         std::uniform_real_distribution<double> dRate(0.0, 1.0);
         for (int i = 0; i < populationSize; ++i)
         {
             int id = dId(get);
-            int size = dSize(get);
+            int point = dPoint(get);
             double rate = dRate(get);
             if (rate <= crossRate)
             {
-                allPopulation[i].cross(allPopulation[id], size);
+                allPopulation[i].cross(allPopulation[id], point);
             }
         }
     }
@@ -169,6 +172,24 @@ public:
             best = (best.fitness < allPopulation[i].fitness) ? allPopulation[i] : best;
         }
         return best;
+    }
+
+    void checkAndForcedMutate() // Check if have the same binary bits in the same location
+    {
+        std::uniform_int_distribution<> dId(0, populationSize - 1);
+        for (int j = 0; j < 22; ++j)
+        {
+            bool ifSame = true;
+            for (int i = 0; i < populationSize - 1; ++i)
+            {
+                if (allPopulation[i].x[j] != allPopulation[i + 1].x[j])
+                    ifSame = false;
+            }
+            if (ifSame)
+            {
+                allPopulation[dId(get)].x[j] = !allPopulation[dId(get)].x[j];
+            }
+        }
     }
 };
 void save(std::ofstream &writeFile, population &p, int Generation)
@@ -207,6 +228,7 @@ void run()
         p.select();
         p.crossOver();
         p.mutateOver();
+        p.checkAndForcedMutate();
         save(writeFile, p, i + 1);
     }
     // std::cout << "best finess = " <<  best << std::endl;
