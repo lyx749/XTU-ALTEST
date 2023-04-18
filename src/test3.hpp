@@ -1,22 +1,21 @@
 #ifndef TEST3_HPP
 #define TEST3_HPP
 
-#include <iostream>
-#include <vector>
 #include <string>
-#include <fstream>
 #include <sstream>
 #include <cmath>
 #include <random>
 #include <ctime>
+#include "bmp.hpp"
 
 const int inputNodes = 8000; // 输入层神经元数量，即32256维图像向量
 const int hiddenNodes = 64;  // 隐藏层神经元的数量
 const int outputNodes = 15;  // 输出层神经元数量，即YALE人脸数据库中人类数量
 
-const double learningRate = 0.1;    // 学习率
-const int maxEpochs = 1000;         // 最大训练轮数
+const double learningRate = 0.3;    // 学习率
+const int maxEpochs = 200;         // 最大训练轮数
 const double targetAccuracy = 0.95; // 目标准确率
+readBMP *readBMPptr = readBMP::GetInterface();
 
 // 用于神经元的输出
 double sigmoid(double x)
@@ -195,25 +194,7 @@ void neuralNetwork::backpropagation(std::vector<double> input, std::vector<doubl
 
 std::vector<double> neuralNetwork::bmpToVector(char *filePath)
 {
-    std::ifstream file(filePath, std::ios::binary);
-    if (file.is_open())
-    {
-        file.seekg(54, std::ios::beg);
-        std::vector<char> vec(8000);
-        file.read(vec.data(), 8000);
-        std::vector<double> input(8000);
-        for (int i = 0; i < 8000; ++i)
-        {
-            input[i] = vec[i] / 255.0;
-            // std::cout << input[i] << std::endl;
-        }
-        return input;
-    }
-    else
-    {
-        std::cerr << "can't open the file" << std::endl;
-        exit(1);
-    }
+    return readBMPptr->bmpToVector(filePath);
 }
 
 void neuralNetwork::train()
@@ -353,16 +334,21 @@ void neuralNetwork::test()
 void runtest()
 {
     neuralNetwork n{};
+// again:   
     int epochsCount = 0;
-    // while (epochsCount != maxEpochs)
-    // {
-    //     epochsCount++;
-    //     std::cout << epochsCount << std::endl;
-    //     n.train();
-    // }
+    while (epochsCount != maxEpochs)
+    {
+        epochsCount++;
+        std::cout << epochsCount << std::endl;
+        n.train();
+    }
     // n.saveWeightAndThreshold();
     n.readWeightAndThreshold();
     n.test();
     std::cout << "Recognition accuracy is " << n.getAccuracy() << std::endl;
+    // if(n.getAccuracy() < targetAccuracy)
+    // {
+    //     goto again;
+    // }
 }
 #endif
