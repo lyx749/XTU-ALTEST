@@ -16,8 +16,8 @@ const double maxNums = 4194304.0;
 using gene = std::array<double, 22>;
 const double crossRate = 0.3;
 const double mutateRate = 0.05;
-const int populationSize = 512;
-const int maxGeneration = 500;
+const int populationSize = 32;
+const int maxGeneration = 1000;
 
 std::random_device seed;
 std::mt19937 get(seed());
@@ -90,7 +90,7 @@ private:
         std::shared_ptr<individual> temp2 = std::make_shared<individual>();
         temp1->x = this->x;
         temp2->x = temp2->x;
-        writeFile << "cross over and cross location is " << point << std::endl;
+        //writeFile << "cross over and cross location is " << point << std::endl;
         //save(temp1->x);
         //save(temp2->x);
         for (int i = point; i < 22; ++i)
@@ -106,7 +106,7 @@ private:
     {
         std::uniform_int_distribution<> dist(0, 21);
         int r = dist(get);
-        writeFile << "mutateOver and mutation location is " << r << std::endl;
+        //writeFile << "mutateOver and mutation location is " << r << std::endl;
         std::shared_ptr<individual> temp = std::make_shared<individual>();
         temp->x = this->x;
         temp->x[r] = !temp->x[r];
@@ -235,6 +235,7 @@ public:
                 temp->x[j] = !temp->x[j];
                 save(temp->x);
                 currentPopulation.push_back(temp);
+                writeFile << "Forced mutation in position over!" << std::endl;
             }
         }
     }
@@ -247,7 +248,10 @@ void run()
         std::cerr << "can not open writefile" << std::endl;
     }
     population p{};
-    for (int i = 0; i < maxGeneration; ++i)
+    int count = 0;
+    double tempBestFitness = p.getBest()->fitness;
+    int i = 0;
+    for (i = 0; i < maxGeneration; ++i)
     {
         writeFile << "Generation " << i + 1 << std::endl;
         p.calculateFitness();
@@ -255,15 +259,33 @@ void run()
         {
             printf("Generation = %d\n", i);
         }
-
+        //std::cout << "tempBestFitness = " << tempBestFitness << "p.getBest()->fitness = " << p.getBest()->fitness << std::endl;
+        if(std::abs(tempBestFitness - p.getBest()->fitness) <= 0.000000000001)
+        {
+            ++count;
+        }
+        else
+        {
+            count = 0;
+            tempBestFitness = p.getBest()->fitness;
+        }
         p.select();
         p.crossOver();
         p.mutateOver();
         p.checkAndForcedMutate();
+        for(auto &e : p.selectedPopulation)
+        {
+            save(e->x);
+        }
         writeFile << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+        if(count == 20)
+        {
+            break;
+        }
+        //std::cout << count << std::endl;
     }
     std::shared_ptr<individual> best = p.getBest();
-    printf("Generation = %d, x = %.10lf, fitness = %.10lf\n", maxGeneration, best->getDecode(), best->fitness);
+    printf("Generation = %d, x = %.10lf, fitness = %.10lf\n", i, best->getDecode(), best->fitness);
 }
 
 #endif

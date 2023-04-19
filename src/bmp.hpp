@@ -93,9 +93,9 @@ public:
             for (int i = 0; i < imgDataSize; ++i)
             {
                 int position = (int)imageData[i] * 4;
-                double tmp = (double)palette[position] + (double)palette[position + 1] + (double)palette[position + 2] + (double)palette[position + 3];
+                double tmp = (double)palette[position] + (double)palette[position + 1] + (double)palette[position + 2];
                 // std::cout << (int)imageData[i] << " " << (double)palette[position] << " " << (double)palette[position + 1] << " " << (double)palette[position + 2] << " " << (double)palette[position + 3] << std::endl;
-                bmpVector.push_back(tmp / (255.0 * 4.0));
+                bmpVector.push_back(tmp / (255.0 * 3.0));
             }
 
             // for (auto &e : bmpVector)

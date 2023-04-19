@@ -6,6 +6,6 @@
 int main()
 {
     //test();
-    //run();
-    runtest();
+    run();
+    //runtest();
 }

@@ -13,7 +13,7 @@ const int hiddenNodes = 64;  // 隐藏层神经元的数量
 const int outputNodes = 15;  // 输出层神经元数量，即YALE人脸数据库中人类数量
 
 const double learningRate = 0.3;    // 学习率
-const int maxEpochs = 200;         // 最大训练轮数
+const int maxEpochs = 100;         // 最大训练轮数
 const double targetAccuracy = 0.95; // 目标准确率
 readBMP *readBMPptr = readBMP::GetInterface();
 
@@ -335,14 +335,14 @@ void runtest()
 {
     neuralNetwork n{};
 // again:   
-    int epochsCount = 0;
-    while (epochsCount != maxEpochs)
-    {
-        epochsCount++;
-        std::cout << epochsCount << std::endl;
-        n.train();
-    }
-    // n.saveWeightAndThreshold();
+    // int epochsCount = 0;
+    // while (epochsCount != maxEpochs)
+    // {
+    //     epochsCount++;
+    //     std::cout << epochsCount << std::endl;
+    //     n.train();
+    // }
+    //n.saveWeightAndThreshold();
     n.readWeightAndThreshold();
     n.test();
     std::cout << "Recognition accuracy is " << n.getAccuracy() << std::endl;
