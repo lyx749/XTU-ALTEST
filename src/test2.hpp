@@ -5,11 +5,11 @@
 #include <cmath>
 #include <random>
 #include <iostream>
-#include <format>
 #include <fstream>
 #include <vector>
 #include <list>
 #include <memory>
+#include <algorithm>
 
 const double PI = 3.1415926;
 const double maxNums = 4194304.0;
@@ -24,7 +24,6 @@ std::mt19937 get(seed());
 
 class individual;
 class population;
-std::list<individual *> allAllocatedMemory; // 用于释放内存
 std::ofstream writeFile{"gene.txt", std::ios::out &std::ios::trunc &std::ios::app};
 
 double targetFunction(double x)
@@ -278,7 +277,7 @@ void run()
             save(e->x);
         }
         writeFile << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-        if(count == 20)
+        if(count == 20 && tempBestFitness >= 3.84)
         {
             break;
         }

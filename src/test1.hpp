@@ -10,7 +10,6 @@
 typedef std::pair<int, std::string> element;
 typedef std::priority_queue<element, std::vector<element>, std::greater<element>> statePQ;
 
-
 std::ostream &operator<<(std::ostream &out, std::string &str)
 {
     int count = 0;
@@ -34,23 +33,23 @@ private:
 public:
     solve(std::string &&i_start, std::string &&i_goal) : start(i_start), goal(i_goal)
     {
-        // int sum1 = 0, sum2 = 0;
-        // for (int i = 0; i < 9; ++i)
-        // {
-        //     for (int j = 0; j < i; ++j)
-        //     {
-        //         if (start[i] > start[j])
-        //             ++sum1;
-        //         if (goal[i] > goal[j])
-        //             ++sum2;
-        //     }
-        // }
+        int sum1 = 0, sum2 = 0;
+        for (int i = 0; i < 9; ++i)
+        {
+            for (int j = 0; j < i; ++j)
+            {
+                if (start[i] > start[j])
+                    ++sum1;
+                if (goal[i] > goal[j])
+                    ++sum2;
+            }
+        }
 
-        // if ((sum1 % 2 == 0 && sum2 % 2 != 0) || (sum1 % 2 != 0 && sum2 % 2 == 0))
-        // {
-        //     std::cerr << "input error that is no anwser" << std::endl;
-        //     exit(1);
-        // }
+        if ((sum1 % 2 == 0 && sum2 % 2 != 0) || (sum1 % 2 != 0 && sum2 % 2 == 0))
+        {
+            std::cerr << "input error that is no anwser" << std::endl;
+            exit(1);
+        }
     }
 
 private:
@@ -258,8 +257,14 @@ void solve::sloveByDfs()
 
 void test()
 {
-    std::string start("012345678"); // 012345678 283104765
-    std::string goal("876543210");  // 876543210 283140765
+    // std::string start("012345678"); // 012345678 283104765
+    // std::string goal("876543210");  // 876543210 283140765
+    std::string start; // 012345678 283104765
+    std::string goal;  // 876543210 283140765
+    std::cout << "please input start state : ";
+    std::cin >> start;
+    std::cout << "please input goal state : ";
+    std::cin >> goal;
     solve s(std::move(start), std::move(goal));
     clock_t begin = clock();
     s.sloveByBfs();
@@ -270,8 +275,8 @@ void test()
     begin = clock();
     std::cout << "A* need " << begin - end << "ms" << std::endl;
     std::cout << "====================================" << std::endl;
-    s.sloveByDfs();
-    end = clock();
-    std::cout << "dfs need " << end - begin << "ms" << std::endl;
+    // s.sloveByDfs();
+    // end = clock();
+    // std::cout << "dfs need " << end - begin << "ms" << std::endl;
 }
 #endif

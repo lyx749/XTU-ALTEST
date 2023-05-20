@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/lyx/Desktop/AItest/build",
+  "command": "C:\\study\\mingw64\\bin\\g++.exe  @CMakeFiles/altest.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\altest.dir\\main.cpp.obj -c C:\\Users\\lyx\\Desktop\\AItest\\main.cpp",
+  "file": "C:/Users/lyx/Desktop/AItest/main.cpp",
+  "output": "CMakeFiles/altest.dir/main.cpp.obj"
+}
+]

@@ -86,16 +86,26 @@ public:
             对于 1 位深的 BMP 图像，调色板包含 2 个颜色信息，每个颜色信息占用 4 字节，按照 BGR(A) 的顺序排列。
             */
             std::vector<unsigned char> imageData(width * height);
-
+            // std::vector<unsigned char> imageData(500);
             inFile.read(reinterpret_cast<char *>(imageData.data()), sizeof(unsigned char) * width * height);
 
             std::vector<double> bmpVector;
+            int count = 0;
+            double tmp = 0.0;
             for (int i = 0; i < imgDataSize; ++i)
             {
+                //++count;
                 int position = (int)imageData[i] * 4;
-                double tmp = (double)palette[position] + (double)palette[position + 1] + (double)palette[position + 2];
-                // std::cout << (int)imageData[i] << " " << (double)palette[position] << " " << (double)palette[position + 1] << " " << (double)palette[position + 2] << " " << (double)palette[position + 3] << std::endl;
+                tmp = (double)palette[position] + (double)palette[position + 1] + (double)palette[position + 2];
+                //tmp += (((double)palette[position] + (double)palette[position + 1] + (double)palette[position + 2]) / (255.0 * 3));
+                //  std::cout << (int)imageData[i] << " " << (double)palette[position] << " " << (double)palette[position + 1] << " " << (double)palette[position + 2] << " " << (double)palette[position + 3] << std::endl;
                 bmpVector.push_back(tmp / (255.0 * 3.0));
+                // if (count == 16)
+                // {
+                //     bmpVector.push_back(tmp / 16.0);
+                //     count = 0;
+                //     tmp = 0;
+                // }
             }
 
             // for (auto &e : bmpVector)

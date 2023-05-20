@@ -13,7 +13,7 @@ const int hiddenNodes = 64;  // 隐藏层神经元的数量
 const int outputNodes = 15;  // 输出层神经元数量，即YALE人脸数据库中人类数量
 
 const double learningRate = 0.3;    // 学习率
-const int maxEpochs = 100;         // 最大训练轮数
+const int maxEpochs = 1000;         // 最大训练轮数
 const double targetAccuracy = 0.95; // 目标准确率
 readBMP *readBMPptr = readBMP::GetInterface();
 
@@ -31,8 +31,8 @@ double sigmoidDerivative(double x)
 
 double getRandom(double x)
 {
-    std::random_device seed;
-    std::mt19937 get(seed());
+    static std::random_device seed;
+    static std::mt19937 get(seed());
     std::uniform_real_distribution<double> dis(0.0, x);
     return dis(get);
 }
@@ -42,7 +42,7 @@ class neuralNetwork
 public:
     neuralNetwork();
     void train();
-    void test();
+    double test();
     void saveWeightAndThreshold();
     void readWeightAndThreshold();
     double getAccuracy() { return this->accuracy; }
@@ -53,8 +53,8 @@ private:
     std::vector<std::vector<double>> hiddenWeights; // 隐藏层到输入层的权重矩阵
     std::vector<double> outputBiases;               // 输出层神经元的偏置值
 private:
-    std::vector<double> feedForward(std::vector<double> input);                        // 前向传播
-    void backpropagation(std::vector<double> input, std::vector<double> targetOutput); // 反向传播
+    std::vector<double> feedForward(std::vector<double> &input);                         // 前向传播
+    void backpropagation(std::vector<double> &input, std::vector<double> &targetOutput); // 反向传播
     std::vector<double> bmpToVector(char *fileName);
     double accuracy = 0.0;
 };
@@ -94,7 +94,7 @@ neuralNetwork::neuralNetwork()
     }
 }
 
-std::vector<double> neuralNetwork::feedForward(std::vector<double> input)
+std::vector<double> neuralNetwork::feedForward(std::vector<double> &input)
 {
     std::vector<double> hiddenOutput(hiddenNodes);
     for (int i = 0; i < hiddenNodes; ++i)
@@ -121,7 +121,7 @@ std::vector<double> neuralNetwork::feedForward(std::vector<double> input)
     return output;
 }
 
-void neuralNetwork::backpropagation(std::vector<double> input, std::vector<double> targetOutput)
+void neuralNetwork::backpropagation(std::vector<double> &input, std::vector<double> &targetOutput)
 {
     // 计算隐藏层和输出层的误差
     std::vector<double> hiddenOutput(hiddenNodes);
@@ -214,6 +214,8 @@ void neuralNetwork::train()
             }
             std::vector<double> input = bmpToVector(path);
             std::vector<double> target(outputNodes, 0);
+            delete[] path;
+            path = nullptr;
             target[j - 1] = 1;
             backpropagation(input, target);
         }
@@ -296,7 +298,7 @@ void neuralNetwork::readWeightAndThreshold()
     }
 }
 
-void neuralNetwork::test()
+double neuralNetwork::test()
 {
     double total = 0.0;
     double correct = 0.0;
@@ -316,39 +318,65 @@ void neuralNetwork::test()
             }
             std::vector<double> input = bmpToVector(path);
             std::vector<double> output = feedForward(input);
+            delete[] path;
+            path = nullptr;
             int id = 0;
             for (int i = 1; i < 15; ++i)
             {
                 if (output[id] < output[i])
                     id = i;
             }
-            std::cout << "this is the " << id + 1 << "th person!"
-                      << " " << output[id] << std::endl;
+            // std::cout << "this is the " << id + 1 << "th person!"
+            //<< " " << output[id] << std::endl;
             if (id + 1 == j)
                 ++correct;
         }
     }
     this->accuracy = correct / total;
+    return this->accuracy;
 }
 
 void runtest()
 {
+again:
+    std::cout << "please input <1-2> to choose is train or test" << std::endl;
+    std::cout << "1 : train\n"
+              << "2 : test" << std::endl;
+
+    std::cout << "please input : ";
+    int bpMode = 0;
+    std::cin >> bpMode;
+    std::cout << "initialize..... please wait a while" << std::endl;
     neuralNetwork n{};
-// again:   
-    // int epochsCount = 0;
-    // while (epochsCount != maxEpochs)
-    // {
-    //     epochsCount++;
-    //     std::cout << epochsCount << std::endl;
-    //     n.train();
-    // }
-    //n.saveWeightAndThreshold();
-    n.readWeightAndThreshold();
-    n.test();
-    std::cout << "Recognition accuracy is " << n.getAccuracy() << std::endl;
-    // if(n.getAccuracy() < targetAccuracy)
-    // {
-    //     goto again;
-    // }
+    if (bpMode == 1)
+    {
+        int epochsCount = 0;
+        while (epochsCount != maxEpochs)
+        {
+            epochsCount++;
+            n.train();
+            if (epochsCount % 10 == 0)
+            {
+                std::cout << "Number of training rounds: " << epochsCount << std::endl;
+                double accuracy = n.test();
+                std::cout << "Recognition accuracy is " << n.getAccuracy() << std::endl;
+                if (accuracy >= 1.0)
+                {
+                    break;
+                }
+            }
+        }
+        n.saveWeightAndThreshold();
+    }
+    else if (bpMode == 2)
+    {
+        n.readWeightAndThreshold();
+        double accuracy = n.test();
+        std::cout << "Recognition accuracy is " << n.getAccuracy() << std::endl;
+    }
+    else
+    {
+        goto again;
+    }
 }
 #endif
